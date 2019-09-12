@@ -454,7 +454,10 @@ enum LineStyle : Int {
 		let styleSize = fontSize ?? styleDescriptor.fontAttributes[UIFontDescriptor.AttributeName.size] as? CGFloat ?? CGFloat(14)
 		
 		var finalFont : UIFont
-		if let finalFontName = fontName, let font = UIFont(name: finalFontName, size: styleSize) {
+        
+        if fontName == UIFont.systemFont(ofSize: styleSize).fontName {
+            finalFont = UIFont.systemFont(ofSize: styleSize)
+        } else if let finalFontName = fontName, let font = UIFont(name: finalFontName, size: styleSize) {
 			finalFont = font
 		} else {
 			finalFont = UIFont.preferredFont(forTextStyle:  textStyle)
