@@ -31,6 +31,7 @@ enum LineType : Int {
 	case h1, h2, h3, h4, h5, h6, body
 }
 
+public var isPayEnrolment = false
 
 enum LineStyle : Int {
 	case none
@@ -464,12 +465,19 @@ enum LineStyle : Int {
 		}
 		
 		let finalFontDescriptor = finalFont.fontDescriptor
-		if style == .italic {
-			if let italicDescriptor = finalFontDescriptor.withSymbolicTraits(.traitItalic) {
-				finalFont = UIFont(descriptor: italicDescriptor, size: styleSize)
-			}
-			
-		}
+        
+        if style == .italic {
+          if let italicDescriptor = finalFontDescriptor.withSymbolicTraits(.traitItalic) {
+            if isPayEnrolment {
+              if let boldDescriptor = finalFontDescriptor.withSymbolicTraits(.traitBold) {
+                finalFont = UIFont(descriptor: boldDescriptor, size: styleSize)
+              }
+            } else {
+              finalFont = UIFont(descriptor: italicDescriptor, size: styleSize)
+            }
+          }
+        }
+        
 		if style == .bold {
 			if let boldDescriptor = finalFontDescriptor.withSymbolicTraits(.traitBold) {
 				finalFont = UIFont(descriptor: boldDescriptor, size: styleSize)
