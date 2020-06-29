@@ -31,8 +31,6 @@ enum LineType : Int {
 	case h1, h2, h3, h4, h5, h6, body
 }
 
-public var isPayEnrolment = false
-
 enum LineStyle : Int {
 	case none
 	case italic
@@ -58,6 +56,8 @@ enum LineStyle : Int {
 /// A class that takes a [Markdown](https://daringfireball.net/projects/markdown/) string or file and returns an NSAttributedString with the applied styles. Supports Dynamic Type.
 @objc open class SwiftyMarkdown: NSObject {
 	
+    public var isPayEnrolment = false
+    
 	/// The styles to apply to any H1 headers found in the Markdown
 	open var h1 = BasicStyles()
 	
@@ -442,6 +442,10 @@ enum LineStyle : Int {
 			attributes[NSAttributedString.Key.foregroundColor] = link.color
 		}
 		
+        if style == .bold {
+          attributes[NSAttributedString.Key.foregroundColor] = bold.color
+        }
+        
 		// Fallback to body
 		if let _ = fontName {
 			
@@ -467,27 +471,31 @@ enum LineStyle : Int {
 		let finalFontDescriptor = finalFont.fontDescriptor
         
         if style == .italic {
-          if let italicDescriptor = finalFontDescriptor.withSymbolicTraits(.traitItalic) {
             if isPayEnrolment {
-              if let boldDescriptor = finalFontDescriptor.withSymbolicTraits(.traitBold) {
-                finalFont = UIFont(descriptor: boldDescriptor, size: styleSize)
-              }
+                if let boldDescriptor = finalFontDescriptor.withSymbolicTraits(.traitBold) {
+                    finalFont = UIFont(descriptor: boldDescriptor, size: styleSize)
+                }
             } else {
-              finalFont = UIFont(descriptor: italicDescriptor, size: styleSize)
+                if let italicDescriptor = finalFontDescriptor.withSymbolicTraits(.traitItalic) {
+                    finalFont = UIFont(descriptor: italicDescriptor, size: styleSize)
+                }
             }
-          }
         }
         
-		if style == .bold {
-			if let boldDescriptor = finalFontDescriptor.withSymbolicTraits(.traitBold) {
-				finalFont = UIFont(descriptor: boldDescriptor, size: styleSize)
-			}
-			
-		}
-		
-		
-		attributes[NSAttributedString.Key.font] = finalFont
-		
-		return NSAttributedString(string: string, attributes: attributes)
+        if style == .bold {
+            if let boldDescriptor = finalFontDescriptor.withSymbolicTraits(.traitBold) {
+                finalFont = UIFont(descriptor: boldDescriptor, size: styleSize)
+            }
+        }
+        
+        if isPayEnrolment, style == .link{
+            if let boldDescriptor = finalFontDescriptor.withSymbolicTraits(.traitBold) {
+                finalFont = UIFont(descriptor: boldDescriptor, size: styleSize)
+            }
+        }
+        
+        attributes[NSAttributedString.Key.font] = finalFont
+        
+        return NSAttributedString(string: string, attributes: attributes)
 	}
 }
